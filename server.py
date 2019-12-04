@@ -5,7 +5,9 @@ import numpy as np
 import sys
 import traceback
 from request_handler import execute
-from errors import FunctionError, TetherError
+from errors import BaseError, Forbidden, Unauthorized, BadRequest, ServerError
+from time import time as time_system
+from datetime import datetime
 
 app = Flask(__name__)
 app.config.update(
@@ -26,18 +28,20 @@ def route_json():
         post_request = request.get_json(force=True)
         return flask.jsonify(status = 200, 
                              output = execute(post_request))
-        
-    except FunctionError as e:
-        return flask.jsonify(msg = e.msg,
-                             status = e.status,
-                             info = e.info)
-    
-    except TetherError as e:
-        return flask.jsonify(msg = e.msg,
-                             status = e.status,
-                             info = e.info,
-                             request_info = e.request_info)
-    
-    except Exception:
-        print(traceback.format_exc())
-        return flask.jsonify(msg = 500)
+                             
+    # saving throw information for server use, then rethrowing the same error
+    except Exception as e:
+        except_info = str(datetime.now()), str(time_system()), e.status, traceback.format_exc()
+        try:
+            raise e
+        except BadRequest as e:
+            return flask.jsonify(status = e.status, 
+                                 output = e.msg)
+        except:
+            e = ServerError()
+            return flask.jsonify(status = e.status, 
+                                 output = e.msg)
+        finally:
+            print("-"*40)
+            print(*except_info)
+            print("-"*40)
