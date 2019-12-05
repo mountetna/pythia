@@ -31,7 +31,11 @@ def route_json():
                              
     # saving throw information for server use, then rethrowing the same error
     except Exception as e:
-        except_info = str(datetime.now()), str(time_system()), e.status, traceback.format_exc()
+        # is exception in the group of exceptions
+        try:
+            except_info = str(datetime.now()), str(time_system()), e.status, traceback.format_exc()
+        except:
+            except_info = str(datetime.now()), str(time_system()), -1, traceback.format_exc()
         try:
             raise e
         except BadRequest as e:
