@@ -1,5 +1,9 @@
 import os
 import sys
+
+# setting working directory to the location of the test
+curr_dir = os.path.dirname(os.path.realpath(__file__))
+os.chdir(curr_dir)
 sys.path.append("../")
 
 import tempfile
@@ -21,7 +25,6 @@ def client():
     os.unlink(server.app.config['DATABASE'])
 
 def test_methods(client):
-    """Start with a blank database."""
     import json
     url = "/json/"
     post_dict_test1 = {"func": "add", "args": [1,2]}
