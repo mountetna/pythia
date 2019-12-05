@@ -31,6 +31,6 @@ def test_methods(client):
 
     post_dict = post_dict_test1
     post_json = json.dumps(post_dict)
-    
     a = client.post(url, data=post_json)
+    assert a.json["status"] == 200
     
