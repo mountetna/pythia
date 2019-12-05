@@ -1,8 +1,7 @@
 import importlib
+from errors import BadRequest
 import methods
 import copy
-import methods
-from errors import BadRequest
 from traceback import format_exc
 
  
