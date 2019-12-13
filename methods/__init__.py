@@ -12,12 +12,10 @@ def get_functions():
     import glob
     import importlib
   
-    return dict([func_key_value 
+    return dict([[f, getattr(module, f)] 
             for module in get_modules()
-            for func_key_value in [[f, getattr(module, f)] 
-                                    for f in [m for m in dir(module)
-                                              if (getattr(module, m).__name__ is "pythia_func" 
-                                                  if "__name__" in dir(getattr(module, m)) else False)]]])
+            for f in [obj for obj in dir(module)
+                      if getattr(getattr(module, obj), "__name__", None) is "pythia_func"]])
     
 #MODULES = get_modules()
 FUNCTIONS = get_functions()

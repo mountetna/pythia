@@ -1,10 +1,10 @@
 import importlib
+from errors import BadRequest
 import methods
 import copy
-import methods
-from errors import FunctionError, TetherError
 from traceback import format_exc
 
+ 
 def execute(request):
     """
     Executing requests using the methods defined in the methods module.
@@ -25,17 +25,18 @@ def execute(request):
         
     func_name = request["func"]
     if func_name == "tether":
-        try:
-            return tether(request["requests"], args, kwargs)
-        except FunctionError as e:
-            raise TetherError(request_info = e.info)
-        except:
-            raise
+        return tether(request["requests"], args, kwargs)
     else:
-        try:
-            return methods.FUNCTIONS[func_name](*args, **kwargs)
-        except:
-            raise FunctionError(info = {"func_name" : func_name, "args" : args, "kwargs" : kwargs})
+        func = methods.FUNCTIONS[func_name]
+        input_len = len(args)+len(kwargs)
+        func_params = func("__params__")
+        
+        if input_len > len(func_params):
+            raise BadRequest(msg = "Too many input arguments. Got %i, expected %i"%(input_len, len(func_params)))
+        if not all([k in func_params for k in kwargs.keys()]):
+            raise BadRequest(msg = "Input kwarg(s) keys not found in func. Unexpected keys: %s"%(sorted(set(kwargs.keys())-set(func_params.keys()))))
+        
+        return methods.FUNCTIONS[func_name](*args, **kwargs)
         
 def tether(requests, args, kwargs):
     """
