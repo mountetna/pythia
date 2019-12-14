@@ -24,3 +24,7 @@ def exp(a, b):
 @helper("Logarithm")
 def log(a, b = np.e):
     return np.log(a)/np.log(b)
+    
+@helper("Transpose matrix")
+def transpose(m):
+    return np.array(m).T.tolist()
