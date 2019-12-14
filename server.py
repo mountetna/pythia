@@ -1,8 +1,11 @@
+import sys
+if sys.version_info[0] < 3:
+    raise Exception("Must be using Python 3")
+    
 from flask import Flask, render_template, request, redirect, url_for, jsonify, json
 import flask
 
 import numpy as np
-import sys
 import traceback
 from request_handler import execute
 from errors import BaseError, Forbidden, Unauthorized, BadRequest, ServerError
