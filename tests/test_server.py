@@ -9,6 +9,7 @@ sys.path.append("../")
 import tempfile
 import pytest
 import server
+import json
 
 @pytest.fixture
 def client():
@@ -24,13 +25,16 @@ def client():
     os.close(db_fd)
     os.unlink(server.app.config['DATABASE'])
 
-def test_methods(client):
-    import json
-    url = "/json/"
-    post_dict_test1 = {"func": "add", "args": [1,2]}
-
-    post_dict = post_dict_test1
-    post_json = json.dumps(post_dict)
-    a = client.post(url, data=post_json)
-    assert a.json["status"] == 200
+def post(client, request):
+    return client.post("/", data=json.dumps(request))
     
+## Testing add function
+def test_testing_add_function(client):
+    a = post(client, {"func": "add", "args": [1,2]})
+    assert a.json["status"] == 200
+
+## Testing add function
+def test_expects_func_argument(client):
+    a = post(client, {"args": [1,2]})
+    assert a.json["status"] == 422, str(a.json["status"])
+
