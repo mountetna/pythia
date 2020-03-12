@@ -1,2 +1,9 @@
 post_json.py
 *__pycache__*
+*.pyc
+pythia.wsgi
+.DS_store
+._*
+log
+*.swp
+python_modules
