@@ -8,7 +8,7 @@ import flask
 import numpy as np
 import traceback
 from request_handler import execute
-from errors import BaseError, Forbidden, Unauthorized, BadRequest, ServerError
+from errors import PythiaError, Forbidden, Unauthorized, BadRequest, ServerError
 from time import time as time_system
 from datetime import datetime
 
@@ -23,7 +23,7 @@ app.config.update(
 def route_home():
     return "Home"
 
-@app.route('/json/', methods=['POST'])
+@app.route('/', methods=['POST'])
 def route_json():
 
     try:
@@ -34,21 +34,12 @@ def route_json():
                              
     # saving throw information for server use, then rethrowing the same error
     except Exception as e:
-        # is exception in the group of exceptions
-        try:
-            except_info = str(datetime.now()), str(time_system()), e.status, traceback.format_exc()
-        except:
-            except_info = str(datetime.now()), str(time_system()), -1, traceback.format_exc()
-        try:
-            raise e
-        except BadRequest as e:
-            return flask.jsonify(status = e.status, 
-                                 output = e.msg)
-        except:
+        print("-"*40)
+        print("General exception: %s"%str(e.args))
+        if not isinstance(e, PythiaError):
             e = ServerError()
-            return flask.jsonify(status = e.status, 
-                                 output = e.msg)
-        finally:
-            print("-"*40)
-            print(*except_info)
-            print("-"*40)
+        print(e.msg, e.status)
+        print(traceback.format_exc())
+        print("-"*40)
+        return flask.jsonify(status = e.status, 
+                             output = e.msg)
