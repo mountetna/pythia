@@ -20,8 +20,12 @@ def execute(request):
     output: <tether function> OR method.func(*args, **kwargs)
     """
     
+    
     args = request.get("args",[])
-    kwargs = request.get("kwargs",{})
+    kwargs = request.get("kwargs",{})    
+    
+    if "func" not in request:
+        raise BadRequest(msg = "Required param ''func'' is missing")
         
     func_name = request["func"]
     if func_name == "tether":
